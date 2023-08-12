@@ -41,15 +41,44 @@ export class Gallery extends Component {
   };
 
   onSubmit = value => {
-    this.setState({ inputValue: value });
+    this.setState({
+      inputValue: value,
+      page: 1,
+      photos: [],
+      total: 0,
+      error: null,
+      isLoading: false,
+    });
+  };
+
+  loadMore = () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
   render() {
+    const { photos, total, error } = this.state;
     return (
       <>
-        <Text textAlign="center">Sorry. There are no images ... 😭</Text>
-
         <SearchForm onSubmit={this.onSubmit} />
+        {error && (
+          <Text textAlign="center">
+            Sorry. Something went wrong... {error}😭
+          </Text>
+        )}
+        <Grid>
+          {photos.map(({ id, avg_color, alt, src }) => {
+            return (
+              <GridItem key={id}>
+                <CardItem color={avg_color}>
+                  <img src={src.large} alt={alt} />
+                </CardItem>
+              </GridItem>
+            );
+          })}
+        </Grid>
+        {photos.length > 0 && total > photos.length && (
+          <Button onClick={this.loadMore}>Load more...</Button>
+        )}
       </>
     );
   }
